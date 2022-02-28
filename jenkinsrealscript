@@ -1,0 +1,61 @@
+    #!/bin/bash
+#AUTHOR: ADE ADEBISI
+#DATE: MARCH 1ST, 2022
+#DESCRIPTION: JENKINS AUTOMATED INSTALLATION
+
+echo “JENKINS AUTOMATED INSTALLATION BEGINS”
+sleep 3
+
+echo “Before we can install Jenkins, we need to have Java installed in our system please wait while we install java..."
+
+
+sudo yum install java-1.8.0-openjdk-devel -y
+
+
+echo "Now we need to enable the Jenkins repository..."
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+
+if
+[ $? -ne 0 ]
+#This means if the above command does not do what it is intended to do(i.e not equal 0), do the below command.
+
+then
+sudo yum install wget -y
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+fi
+
+echo -e "\nNow we disable key check on the repo\n "
+
+sudo sed -i 's/gpgcheck=1/gpgcheck=0/g' /etc/yum.repos.d/jenkins.repo
+
+sleep 5
+
+echo "Now we will install the latest stable version of Jenkins."
+
+sudo yum install jenkins -y
+
+sleep 4
+
+echo “Now we can start and enable the Jenkins service..."
+
+sudo systemctl start jenkins
+if
+[ $? -ne 0 ]
+
+then
+echo "Issue with starting Jenkins"
+exit 92
+fi
+
+sudo systemctl enable jenkins
+
+echo "Now we can open the ports necessary for Jenkins to work"
+sleep 3
+
+sudo firewall-cmd --permanent --zone=public --add-port=8080/tcp
+
+sudo firewall-cmd --reload
+
+echo "GLORY BE TO GOD"
